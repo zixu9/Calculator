@@ -2,240 +2,326 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calculator With History</title>
   <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Fraunces:opsz,wght@9..144,300;9..144,600&display=swap" rel="stylesheet"/>
 </head>
 <body>
 
-  <div class="page-wrapper">
+<div class="page-wrapper">
 
-    <header class="header">
-      <div class="header-accent"></div>
-      <h1 class="title">Calc<span>_</span>History</h1>
-      <p class="subtitle">A calculator that remembers</p>
-    </header>
+  <!-- ── Header ── -->
+  <header class="header">
+    <div class="header-left">
+      <h1 class="title">Calc <span class="title-accent">with</span> History</h1>
+      <p class="subtitle">Powered by Python · Results saved server-side</p>
+    </div>
+    <div class="header-badge" id="server-badge">⏳ connecting…</div>
+  </header>
 
-    <main class="main-grid">
+  <!-- ── Main grid ── -->
+  <div class="main-grid">
 
-      <!-- LEFT: Calculator panel -->
-      <section class="panel calc-panel">
-        <div class="panel-label">CALCULATE</div>
+    <!-- ── LEFT: Calculator ── -->
+    <section class="panel calc-panel">
+      <div class="panel-tag">Calculator</div>
 
-        <div class="display" id="display">
-          <span class="display-placeholder">8 + 5</span>
+      <!-- Display -->
+      <div class="display-wrap" id="display-wrap">
+        <span class="display-cursor">&gt;_</span>
+        <div class="display-expr" id="display-expr" data-ph="e.g.  8 + 5"></div>
+      </div>
+
+      <!-- Keypad -->
+      <div class="keypad">
+        <!-- Row 1 -->
+        <button class="key key-num"    data-val="7">7</button>
+        <button class="key key-num"    data-val="8">8</button>
+        <button class="key key-num"    data-val="9">9</button>
+        <button class="key key-op"     data-val=" / ">÷</button>
+        <!-- Row 2 -->
+        <button class="key key-num"    data-val="4">4</button>
+        <button class="key key-num"    data-val="5">5</button>
+        <button class="key key-num"    data-val="6">6</button>
+        <button class="key key-op"     data-val=" * ">×</button>
+        <!-- Row 3 -->
+        <button class="key key-num"    data-val="1">1</button>
+        <button class="key key-num"    data-val="2">2</button>
+        <button class="key key-num"    data-val="3">3</button>
+        <button class="key key-op"     data-val=" - ">−</button>
+        <!-- Row 4 -->
+        <button class="key key-num"    data-val="0">0</button>
+        <button class="key key-num"    data-val=".">.</button>
+        <button class="key key-action" id="btn-back">⌫</button>
+        <button class="key key-op"     data-val=" + ">+</button>
+        <!-- Row 5 -->
+        <button class="key key-action" id="btn-clear-expr">C</button>
+        <button class="key key-equals" id="btn-calc">= Calculate</button>
+      </div>
+
+      <!-- Feedback -->
+      <div class="feedback fb-result" id="fb-result">
+        <span class="fb-expr"  id="fb-expr"></span>
+        <span class="fb-value" id="fb-value"></span>
+      </div>
+      <div class="feedback fb-error" id="fb-error" id="fb-error">
+        <span id="fb-error-text"></span>
+      </div>
+    </section>
+
+    <!-- ── RIGHT: History ── -->
+    <section class="panel history-panel">
+      <div class="panel-tag">History</div>
+
+      <div class="history-scroll" id="history-scroll">
+        <div class="history-empty" id="history-empty">
+          <div class="empty-icon">🕐</div>
+          <span>No history yet</span>
         </div>
+      </div>
 
-        <div class="keypad">
-          <!-- Number + operator buttons -->
-          <button class="key key-num" data-val="7">7</button>
-          <button class="key key-num" data-val="8">8</button>
-          <button class="key key-num" data-val="9">9</button>
-          <button class="key key-op" data-val=" / ">÷</button>
-
-          <button class="key key-num" data-val="4">4</button>
-          <button class="key key-num" data-val="5">5</button>
-          <button class="key key-num" data-val="6">6</button>
-          <button class="key key-op" data-val=" * ">×</button>
-
-          <button class="key key-num" data-val="1">1</button>
-          <button class="key key-num" data-val="2">2</button>
-          <button class="key key-num" data-val="3">3</button>
-          <button class="key key-op" data-val=" - ">−</button>
-
-          <button class="key key-num" data-val="0">0</button>
-          <button class="key key-num" data-val=".">.</button>
-          <button class="key key-action key-back" id="backspace">⌫</button>
-          <button class="key key-op" data-val=" + ">+</button>
-        </div>
-
-        <div class="calc-actions">
-          <button class="btn btn-secondary" id="btn-clear-input">Clear</button>
-          <button class="btn btn-primary" id="btn-calculate">= Calculate</button>
-        </div>
-
-        <div class="result-box" id="result-box">
-          <span id="result-text"></span>
-        </div>
-
-        <div class="error-box" id="error-box">
-          <span id="error-text"></span>
-        </div>
-      </section>
-
-      <!-- RIGHT: History panel -->
-      <section class="panel history-panel">
-        <div class="panel-label">HISTORY</div>
-
-        <div class="history-list" id="history-list">
-          <div class="history-empty" id="history-empty">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-              <path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/>
-            </svg>
-            <p>No history yet</p>
-          </div>
-        </div>
-
-        <div class="history-footer">
-          <button class="btn btn-ghost" id="btn-clear-history">Clear History</button>
-        </div>
-      </section>
-
-    </main>
+      <div class="history-footer">
+        <button class="btn btn-clear-hist" id="btn-clear-hist">✕ Clear History</button>
+      </div>
+    </section>
 
   </div>
 
-  <script src="script.js"></script>
-  <script>
-    // ── Inline script so no extra file is needed ──
-    const display     = document.getElementById('display');
-    const resultBox   = document.getElementById('result-box');
-    const resultText  = document.getElementById('result-text');
-    const errorBox    = document.getElementById('error-box');
-    const errorText   = document.getElementById('error-text');
-    const historyList = document.getElementById('history-list');
-    const historyEmpty= document.getElementById('history-empty');
+  <!-- Keyboard hint -->
+  <p class="kbd-hint">
+    <kbd>Enter</kbd> calculate &nbsp;·&nbsp;
+    <kbd>Backspace</kbd> delete &nbsp;·&nbsp;
+    <kbd>Esc</kbd> clear &nbsp;·&nbsp;
+    Click any history entry to reuse it
+  </p>
 
-    const STORAGE_KEY = 'calc_history';
-    let inputValue = '';
+</div>
 
-    // ── Storage helpers ──
-    function loadHistory() {
-      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-      catch { return []; }
-    }
-    function saveHistory(arr) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
-    }
+<script>
+/* ════════════════════════════════════════════════════════
+   Calculator With History — Frontend JS
+   All calculation & persistence handled by Python server
+════════════════════════════════════════════════════════ */
 
-    // ── Display helpers ──
-    function updateDisplay() {
-      display.innerHTML = inputValue
-        ? `<span class="display-value">${inputValue}</span>`
-        : `<span class="display-placeholder">8 + 5</span>`;
-    }
-    function showResult(msg) {
-      resultBox.classList.add('visible');
-      resultText.textContent = msg;
-      errorBox.classList.remove('visible');
-    }
-    function showError(msg) {
-      errorBox.classList.add('visible');
-      errorText.textContent = msg;
-      resultBox.classList.remove('visible');
-    }
-    function clearFeedback() {
-      resultBox.classList.remove('visible');
-      errorBox.classList.remove('visible');
-    }
+const API = '';   // same origin
 
-    // ── History rendering ──
-    function renderHistory() {
-      const history = loadHistory();
-      historyList.querySelectorAll('.history-item').forEach(el => el.remove());
-      if (history.length === 0) {
-        historyEmpty.style.display = 'flex';
-        return;
-      }
-      historyEmpty.style.display = 'none';
-      [...history].reverse().forEach((entry, i) => {
-        const div = document.createElement('div');
-        div.className = 'history-item';
-        div.style.animationDelay = `${i * 40}ms`;
-        div.innerHTML = `<span class="hi-expr">${entry.expr}</span><span class="hi-eq">=</span><span class="hi-result">${entry.result}</span>`;
-        div.addEventListener('click', () => {
-          inputValue = entry.expr;
-          updateDisplay();
-          clearFeedback();
-        });
-        historyList.appendChild(div);
-      });
-    }
+// ── DOM refs ─────────────────────────────────────────────
+const displayExpr   = document.getElementById('display-expr');
+const displayWrap   = document.getElementById('display-wrap');
+const fbResult      = document.getElementById('fb-result');
+const fbExpr        = document.getElementById('fb-expr');
+const fbValue       = document.getElementById('fb-value');
+const fbError       = document.getElementById('fb-error');
+const fbErrorText   = document.getElementById('fb-error-text');
+const historyScroll = document.getElementById('history-scroll');
+const historyEmpty  = document.getElementById('history-empty');
+const serverBadge   = document.getElementById('server-badge');
 
-    function addToHistory(expr, result) {
-      const history = loadHistory();
-      history.push({ expr, result });
-      saveHistory(history);
-      renderHistory();
-    }
+let inputExpr = '';   // raw string building up, e.g. "8 + 5"
 
-    // ── Calculation ──
-    function calculate() {
-      const raw = inputValue.trim();
-      if (!raw) { showError('Please enter a calculation.'); return; }
+// ── Display ──────────────────────────────────────────────
 
-      const parts = raw.split(/\s+/);
-      if (parts.length !== 3) { showError('Format: number  operator  number'); return; }
+function updateDisplay() {
+  displayExpr.textContent = inputExpr;
+  displayWrap.classList.toggle('active', inputExpr.length > 0);
+}
 
-      const num1 = parseFloat(parts[0]);
-      const op   = parts[1];
-      const num2 = parseFloat(parts[2]);
+function showResult(expr, result) {
+  fbExpr.textContent      = expr + ' =';
+  fbValue.textContent     = result;
+  fbResult.classList.add('show');
+  fbError.classList.remove('show');
+}
 
-      if (isNaN(num1) || isNaN(num2)) { showError('Invalid numbers entered.'); return; }
+function showError(msg) {
+  fbErrorText.textContent = '⚠ ' + msg;
+  fbError.classList.add('show');
+  fbResult.classList.remove('show');
+}
 
-      let result;
-      if      (op === '+') result = num1 + num2;
-      else if (op === '-') result = num1 - num2;
-      else if (op === '*') result = num1 * num2;
-      else if (op === '/') {
-        if (num2 === 0) { showError('Error: Cannot divide by zero.'); return; }
-        result = num1 / num2;
-      } else {
-        showError('Invalid operator. Use +  −  ×  ÷');
-        return;
-      }
+function clearFeedback() {
+  fbResult.classList.remove('show');
+  fbError.classList.remove('show');
+}
 
-      // Tidy the result
-      const nice = parseFloat(result.toFixed(10));
-      const expr = `${num1} ${op} ${num2}`;
-      showResult(`${expr} = ${nice}`);
-      addToHistory(expr, nice);
-    }
+// ── API helpers ──────────────────────────────────────────
 
-    // ── Key events ──
-    document.querySelectorAll('.key[data-val]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        inputValue += btn.dataset.val;
-        updateDisplay();
-        clearFeedback();
-        btn.classList.add('pressed');
-        setTimeout(() => btn.classList.remove('pressed'), 120);
-      });
+async function apiFetch(path, opts = {}) {
+  const r = await fetch(API + path, {
+    headers: { 'Content-Type': 'application/json' },
+    ...opts,
+  });
+  return r.json();
+}
+
+// ── Calculate ────────────────────────────────────────────
+
+async function calculate() {
+  const raw = inputExpr.trim();
+  if (!raw) { showError('Enter a calculation first.'); return; }
+
+  const parts = raw.split(/\s+/);
+  if (parts.length !== 3) {
+    showError('Format: number  operator  number  (e.g. 8 + 5)');
+    return;
+  }
+
+  const [p1, op, p2] = parts;
+  const num1 = parseFloat(p1);
+  const num2 = parseFloat(p2);
+
+  if (isNaN(num1) || isNaN(num2)) {
+    showError('Invalid numbers. Check your input.');
+    return;
+  }
+
+  // Optimistic key animation
+  document.getElementById('btn-calc').classList.add('pressed');
+  setTimeout(() => document.getElementById('btn-calc').classList.remove('pressed'), 180);
+
+  try {
+    const data = await apiFetch('/api/calculate', {
+      method: 'POST',
+      body: JSON.stringify({ num1, operator: op, num2 }),
     });
 
-    document.getElementById('backspace').addEventListener('click', () => {
-      inputValue = inputValue.slice(0, -1);
+    if (data.error) {
+      showError(data.error);
+    } else {
+      showResult(data.entry.expr, data.result);
+      inputExpr = '';
+      updateDisplay();
+      loadHistory();
+    }
+  } catch (e) {
+    showError('Server unreachable. Is server.py running?');
+  }
+}
+
+// ── History ──────────────────────────────────────────────
+
+async function loadHistory() {
+  try {
+    const data = await apiFetch('/api/history');
+    renderHistory(data.history || []);
+    serverBadge.textContent = '🟢 server online';
+  } catch {
+    serverBadge.textContent = '🔴 server offline';
+    historyEmpty.style.display = 'flex';
+  }
+}
+
+function renderHistory(history) {
+  // Remove old items (keep the empty state node)
+  historyScroll.querySelectorAll('.history-item').forEach(el => el.remove());
+
+  if (history.length === 0) {
+    historyEmpty.style.display = 'flex';
+    return;
+  }
+  historyEmpty.style.display = 'none';
+
+  // Newest first
+  [...history].reverse().forEach((entry, i) => {
+    const el = document.createElement('div');
+    el.className = 'history-item';
+    el.style.animationDelay = `${i * 35}ms`;
+
+    const time = entry.timestamp
+      ? entry.timestamp.split(' ')[1]   // show HH:MM:SS
+      : '';
+
+    el.innerHTML = `
+      <div class="hi-left">
+        <div class="hi-expr">${esc(entry.expr)}</div>
+        ${time ? `<div class="hi-time">${time}</div>` : ''}
+      </div>
+      <div class="hi-result">${esc(String(entry.result))}</div>
+    `;
+
+    // Click to reuse expression
+    el.addEventListener('click', () => {
+      inputExpr = entry.expr;
       updateDisplay();
       clearFeedback();
     });
 
-    document.getElementById('btn-clear-input').addEventListener('click', () => {
-      inputValue = '';
-      updateDisplay();
-      clearFeedback();
-    });
+    historyScroll.appendChild(el);
+  });
+}
 
-    document.getElementById('btn-calculate').addEventListener('click', calculate);
+async function clearHistory() {
+  try {
+    await apiFetch('/api/history', { method: 'DELETE' });
+    renderHistory([]);
+  } catch {
+    showError('Could not clear history.');
+  }
+}
 
-    document.getElementById('btn-clear-history').addEventListener('click', () => {
-      saveHistory([]);
-      renderHistory();
-    });
+// ── Escape HTML ──────────────────────────────────────────
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
-    // Keyboard support
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Enter')     { calculate(); return; }
-      if (e.key === 'Backspace') { inputValue = inputValue.slice(0, -1); updateDisplay(); clearFeedback(); return; }
-      if (e.key === 'Escape')    { inputValue = ''; updateDisplay(); clearFeedback(); return; }
-      if (/^[0-9.]$/.test(e.key))     { inputValue += e.key; updateDisplay(); clearFeedback(); }
-      if (['+','-','*','/'].includes(e.key)) { inputValue += ` ${e.key} `; updateDisplay(); clearFeedback(); }
-    });
+// ── Key events ───────────────────────────────────────────
 
-    // Init
+document.querySelectorAll('.key[data-val]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    inputExpr += btn.dataset.val;
     updateDisplay();
-    renderHistory();
-  </script>
+    clearFeedback();
+    btn.classList.add('pressed');
+    setTimeout(() => btn.classList.remove('pressed'), 120);
+  });
+});
+
+document.getElementById('btn-back').addEventListener('click', () => {
+  // If last char is space (from operator), trim the whole " op " chunk
+  if (inputExpr.endsWith(' ')) {
+    inputExpr = inputExpr.trimEnd().slice(0, -1).trimEnd() + ' ';
+    if (inputExpr.trim() === '') inputExpr = '';
+  } else {
+    inputExpr = inputExpr.slice(0, -1);
+  }
+  updateDisplay();
+  clearFeedback();
+});
+
+document.getElementById('btn-clear-expr').addEventListener('click', () => {
+  inputExpr = '';
+  updateDisplay();
+  clearFeedback();
+});
+
+document.getElementById('btn-calc').addEventListener('click', calculate);
+
+document.getElementById('btn-clear-hist').addEventListener('click', clearHistory);
+
+// ── Keyboard support ─────────────────────────────────────
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter')     { e.preventDefault(); calculate(); return; }
+  if (e.key === 'Backspace') {
+    inputExpr = inputExpr.slice(0, -1);
+    updateDisplay(); clearFeedback(); return;
+  }
+  if (e.key === 'Escape') { inputExpr = ''; updateDisplay(); clearFeedback(); return; }
+  if (/^[0-9.]$/.test(e.key)) {
+    inputExpr += e.key; updateDisplay(); clearFeedback();
+  }
+  if (['+', '-', '*', '/'].includes(e.key)) {
+    inputExpr += ` ${e.key} `; updateDisplay(); clearFeedback();
+  }
+});
+
+// ── Init ──────────────────────────────────────────────────
+
+updateDisplay();
+loadHistory();
+</script>
 
 </body>
 </html>
