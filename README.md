@@ -19,7 +19,7 @@ Then go to http://localhost:8000
 
 ###
 <h4>•👨‍🔧Modules used in app.py(backend)</h4>
-<h5>1. http.server<br>2. urllib.parse<br>3. </h5>
+<h5>1. http.server<br>2. urllib.parse<br>3. json<br>4. os<br>5. datetime<br></h5>
 
 ###
 <h4>Thank you 👍</h4>
